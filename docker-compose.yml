@@ -1,0 +1,6 @@
+base:
+    build: .
+    ports:
+        - "80:80"
+    volumes:
+        - app:/var/www/app
