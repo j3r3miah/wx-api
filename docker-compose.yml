@@ -3,4 +3,4 @@ base:
     ports:
         - "80:80"
     volumes:
-        - app:/var/www/app
+        - ./app:/var/www/app
