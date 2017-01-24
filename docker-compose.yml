@@ -4,3 +4,4 @@ base:
         - "80:80"
     volumes:
         - ./app:/var/www/app
+        - ./log:/var/log/app

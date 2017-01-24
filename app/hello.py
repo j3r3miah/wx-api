@@ -8,5 +8,9 @@ app = Flask(__name__)
 def hello():
     return render_template('hello.html')
 
+@app.route('/foo')
+def foo():
+    return "foo"
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
