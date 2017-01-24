@@ -1,7 +1,20 @@
-base:
-    build: .
-    ports:
-        - "80:80"
-    volumes:
-        - ./app:/var/www/app
-        - ./log:/var/log/app
+version: '2'
+
+services:
+
+    base:
+        build: .
+        ports:
+            - "80:80"
+        volumes:
+            - ./app:/var/www/app
+            - ./log:/var/log/app
+
+    db:
+        image: "postgres:alpine"
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_PASSWORD: password
+        volumes:
+            - ./db:/var/lib/postgresql/data

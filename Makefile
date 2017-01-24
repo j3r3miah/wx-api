@@ -1,15 +1,17 @@
 
-all: build
+all: build up
 
-build:
-	rm -f app/uwsgi.sock # lingering socket from killed uwsgi breaks build
+build: down clean_up_after_uwsgi
 	docker-compose build
 
-start:
+up:
 	docker-compose up -d
 
-stop:
+down:
 	docker-compose down
 
-rmlogs:
-	rm -fr log/*.log
+clean_up_after_uwsgi:
+	rm -f app/uwsgi.sock
+
+clean:
+	rm -fr log/*.log db/*
