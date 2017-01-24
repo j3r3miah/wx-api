@@ -8,6 +8,8 @@ RUN apt-get install -yq        \
     python3                    \
     python3-pip                \
     uwsgi-plugin-python3       \
+    postgresql-client          \
+    libpq-dev                  \
     nginx                      \
     supervisor
 
@@ -23,5 +25,7 @@ COPY nginx/nginx.conf /etc/nginx/nginx.conf
 RUN mkdir -p /var/log/app /var/www/app &&          \
     chown -R www-data:www-data /var/www/app &&     \
     chown -R www-data:www-data /var/log
+
+WORKDIR /var/www/app
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

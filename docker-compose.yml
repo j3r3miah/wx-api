@@ -6,9 +6,14 @@ services:
         build: .
         ports:
             - "80:80"
+        environment:
+            DATABASE_URL: "postgresql://postgres:password@db/app_dev"
+            APP_SETTINGS: "config.DevelopmentConfig"
         volumes:
             - ./app:/var/www/app
             - ./log:/var/log/app
+        depends_on:
+            - "db"
 
     db:
         image: "postgres:alpine"
