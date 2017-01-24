@@ -10,35 +10,37 @@ up:
 down:
 	docker-compose down
 
-db_start:
-	docker-compose start db
-
-psql:
-	# docker-compose start db && sleep 2
+psql: _db_start
 	docker-compose run --rm -e PGPASSWORD=password base \
 	    psql -h db -U postgres app_dev
-	# docker-compose stop db
 
-db_init:
-	# docker-compose start db && sleep 2
-	docker-compose run --rm base \
-	    python3 manage.py db init
-	# docker-compose stop db
+db_init: _rm_db _db_first_start
+	docker-compose run --rm -e PGPASSWORD=password base \
+	    psql -h db -U postgres -c 'CREATE DATABASE app_dev;'
+	docker-compose run --rm base python3 manage.py db init
+	docker-compose run --rm base python3 manage.py db migrate
+	docker-compose run --rm base python3 manage.py db upgrade
 
-db_migrate:
-	# docker-compose start db && sleep 2
-	docker-compose run --rm base \
-	    python3 manage.py db migrate
-	# docker-compose stop db
+db_migrate: _db_start
+	docker-compose run --rm base python3 manage.py db migrate
 
-db_upgrade:
-	# docker-compose start db && sleep 2
-	docker-compose run --rm base \
-	    python3 manage.py db upgrade
-	# docker-compose stop db
+db_upgrade: _db_start
+	docker-compose run --rm base python3 manage.py db upgrade
 
-clean:
-	rm -fr log/*.log db/*
+clean: _rm_logs _rm_db
+
 
 _clean_up_after_uwsgi:
 	rm -f app/uwsgi.sock
+
+_rm_db:
+	rm -fr db/*
+
+_rm_logs:
+	rm -fr log/*.log
+
+_db_start:
+	docker-compose up -d db && sleep 2
+
+_db_first_start:
+	docker-compose up -d db && sleep 20

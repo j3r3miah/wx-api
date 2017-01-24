@@ -3,7 +3,7 @@ import enum
 
 from flask import render_template
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
@@ -20,7 +20,10 @@ def hello():
 
 @app.route('/<name>')
 def hello_name(name):
-        return mkstr(name)
+    user = User(name=name)
+    db.session.add(user)
+    db.session.commit()
+    return mkstr(name)
 
 
 # prove we are running python 3
