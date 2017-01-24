@@ -5,20 +5,17 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update
 RUN apt-get install -yq        \
-    python-pip                 \
-    python-dev                 \
-    uwsgi-plugin-python        \
+    python3                    \
+    python3-pip                \
+    uwsgi-plugin-python3       \
     nginx                      \
     supervisor
 
-# get this pip stuff done and cached early because it is slow
+# this upgrades pip, installing it as `pip` instead of `pip3`
+RUN pip3 install --upgrade pip
 
 COPY app/requirements.txt /var/www/app/requirements.txt
-
-RUN pip install --upgrade pip && \
-    pip install -r /var/www/app/requirements.txt
-
-# now iteration on config doesn't invalidate cached pip install
+RUN pip install -r /var/www/app/requirements.txt
 
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY nginx/nginx.conf /etc/nginx/nginx.conf

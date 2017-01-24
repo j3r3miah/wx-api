@@ -1,6 +1,6 @@
-#!flask/bin/python
 from flask import render_template
 from flask import Flask
+import enum
 
 app = Flask(__name__)
 
@@ -10,7 +10,7 @@ def hello():
 
 @app.route('/foo')
 def foo():
-    return "foo"
+    return mkstr('jer')
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+def mkstr(name: str) -> str:
+    return 'Hello {}'.format(name)
