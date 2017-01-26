@@ -40,8 +40,7 @@ users_schema = UserSchema(many=True)
 
 @app.route('/')
 def hello():
-    # return render_template('hello.html')
-    return "hello there"
+    return render_template('hello.html')
 
 
 @app.route('/<name>')
