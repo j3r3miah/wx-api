@@ -1,19 +1,26 @@
-version: '2'
+version: '3'
 
 services:
 
     base:
         build: .
-        ports:
-            - "80:80"
         environment:
             DATABASE_URL: "postgresql://postgres:password@db/app_dev"
             APP_SETTINGS: "config.DevelopmentConfig"
         volumes:
             - ./app:/var/www/app
-            - ./log:/var/log/app
+            - wsgi-socket-volume:/tmp/uwsgi
         depends_on:
+            - "nginx"
             - "db"
+
+    nginx:
+        build: nginx
+        ports:
+            - "80:80"
+        volumes:
+            - ./app/static:/var/www/static:ro
+            - wsgi-socket-volume:/tmp/uwsgi
 
     db:
         image: "postgres:alpine"
@@ -22,4 +29,8 @@ services:
         environment:
             POSTGRES_PASSWORD: password
         volumes:
-            - ./db:/var/lib/postgresql/data
+            - db-data-volume:/var/lib/postgresql/data
+
+volumes:
+    db-data-volume:
+    wsgi-socket-volume:

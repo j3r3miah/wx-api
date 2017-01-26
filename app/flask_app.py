@@ -15,7 +15,8 @@ from models import User
 
 @app.route('/')
 def hello():
-    return render_template('hello.html')
+    # return render_template('hello.html')
+    return "hello there"
 
 
 @app.route('/<name>')
