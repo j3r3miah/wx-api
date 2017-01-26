@@ -7,6 +7,10 @@ all: build up dns
 build:
 	docker-compose build
 
+clean:
+	docker-compose down -v
+	docker-compose rm -f
+
 
 up:
 	docker-compose up -d base
