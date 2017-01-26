@@ -14,6 +14,10 @@ down:
 	docker-compose down
 logs:
 	docker-compose logs -f
+bounce:
+	# sometimes coding errors will break uwsgi code reloading
+	docker-compose stop base
+	docker-compose up -d
 
 
 psql: _db_start
@@ -23,7 +27,7 @@ _db_start:
 	docker-compose up -d db && sleep 2
 
 
-db_reset: _db_reset _db_first_start
+db_init: _db_reset _db_first_start
 	docker-compose run --rm -e PGPASSWORD=password base \
 	    psql -h db -U postgres -c 'CREATE DATABASE app_dev;'
 	docker-compose run --rm base python3 manage.py db init
