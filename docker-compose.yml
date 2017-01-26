@@ -10,7 +10,7 @@ services:
     base:
         build: .
         environment:
-            DATABASE_URL: "postgresql://postgres:password@db/app_dev"
+            DATABASE_URL: "postgresql://postgres:password@db/flaskapp"
             APP_SETTINGS: "config.DevelopmentConfig"
         volumes:
             - ./app:/var/www/app
