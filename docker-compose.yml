@@ -1,11 +1,12 @@
 version: '3'
 
-
 volumes:
+
     db-data-volume:
     wsgi-socket-volume:
 
 services:
+
     base:
         build: .
         environment:
