@@ -1,7 +1,11 @@
 version: '3'
 
-services:
 
+volumes:
+    db-data-volume:
+    wsgi-socket-volume:
+
+services:
     base:
         build: .
         environment:
@@ -16,8 +20,10 @@ services:
 
     nginx:
         build: nginx
+        environment:
+            - VIRTUAL_HOST=flaskapp.test
         ports:
-            - "80:80"
+            - "7780:80"
         volumes:
             - ./app/static:/var/www/static:ro
             - wsgi-socket-volume:/tmp/uwsgi
@@ -31,6 +37,20 @@ services:
         volumes:
             - db-data-volume:/var/lib/postgresql/data
 
-volumes:
-    db-data-volume:
-    wsgi-socket-volume:
+    dnsmasq:
+        image: andyshinn/dnsmasq:2.75
+        command: "-A /test/127.0.0.1 --log-facility=-"
+        ports:
+            - "53:53/udp"
+            - "53:53/tcp"
+        depends_on:
+            - nginx-proxy
+        cap_add:
+            - NET_ADMIN
+
+    nginx-proxy:
+        image: jwilder/nginx-proxy
+        ports:
+            - "80:80"
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro

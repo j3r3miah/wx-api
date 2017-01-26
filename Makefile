@@ -9,9 +9,11 @@ _clean_up_after_uwsgi:
 
 
 up:
-	docker-compose up -d
+	docker-compose up -d base
 down:
 	docker-compose down
+dns:
+	docker-compose up -d dnsmasq
 logs:
 	docker-compose logs -f
 bounce:
