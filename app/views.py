@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, render_template, g
 from models import User
 from schemas import UserSchema
 
-main = Blueprint('views', __name__)
+main = Blueprint('main', __name__)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
