@@ -25,4 +25,4 @@ If uWSGI gets jammed: `$ make bounce`
 
 Stop everything: `$ make down`
 
-Take a look at the  Makefile for other commands.
+Take a look at the Makefile for other commands.
