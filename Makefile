@@ -12,7 +12,7 @@ clean:
 	docker-compose rm -f
 
 
-up:
+up: dns
 	docker-compose up -d base
 down:
 	docker-compose down
@@ -23,7 +23,7 @@ killdns:
 	docker-compose stop dnsmasq nginx-proxy
 
 logs:
-	docker-compose logs -f
+	docker-compose logs -f base postgres
 
 bounce:
 	# sometimes coding errors will break uwsgi code reloading

@@ -1,7 +1,7 @@
 uWSGI
 Flask
 psycopg2
-Flask-SQLAlchemy
+SQLAlchemy
 Flask-Migrate
 SQLAlchemy-Utils
 marshmallow
