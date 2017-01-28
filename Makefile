@@ -37,18 +37,10 @@ psql: _db_start
 
 
 db_init: _db_reset _db_first_start
-	docker-compose run --rm --no-deps -e PGPASSWORD=password base \
-	    psql -h db -U postgres -c 'CREATE DATABASE $(DatabaseName);'
+	docker-compose run --rm --no-deps base python3 manage.py recreate_db
 	docker-compose run --rm --no-deps base python3 manage.py db init
 	docker-compose run --rm --no-deps base python3 manage.py db migrate
 	docker-compose run --rm --no-deps base python3 manage.py db upgrade
-
-db_migrate: _db_start
-	docker-compose run --rm --no-deps base python3 manage.py db migrate
-
-db_upgrade: _db_start
-	docker-compose run --rm --no-deps base python3 manage.py db upgrade
-
 
 _db_reset:
 	# delete persistent docker volume (postgres data files)

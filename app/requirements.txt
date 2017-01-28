@@ -3,5 +3,6 @@ Flask
 psycopg2
 Flask-SQLAlchemy
 Flask-Migrate
+SQLAlchemy-Utils
 marshmallow
 pytest

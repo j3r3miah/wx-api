@@ -1,6 +1,8 @@
 FROM ubuntu:latest
 MAINTAINER Jeremiah Boyle "jeremiah.boyle@gmail.com"
 
+WORKDIR /var/www/app
+
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update
@@ -18,7 +20,5 @@ COPY app/requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
 COPY uwsgi/uwsgi.ini /etc/uwsgi.ini
-
-WORKDIR /var/www/app
 
 CMD ["/usr/local/bin/uwsgi", "--ini", "/etc/uwsgi.ini"]
