@@ -18,6 +18,6 @@ RUN pip install -r /tmp/requirements.txt
 
 COPY uwsgi/uwsgi.ini /etc/uwsgi.ini
 
-WORKDIR /var/www/app
+WORKDIR /flaskapp
 
 CMD ["/usr/local/bin/uwsgi", "--ini", "/etc/uwsgi.ini"]
