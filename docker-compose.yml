@@ -10,14 +10,14 @@ services:
     base:
         build: .
         environment:
-            DATABASE_URL: "postgresql://postgres:password@db/flaskapp"
+            DATABASE_URL: "postgresql://postgres:password@postgres/flaskapp"
             APP_SETTINGS: "config.DevelopmentConfig"
         volumes:
             - ./app:/var/www/app
             - wsgi-socket-volume:/tmp/uwsgi
         depends_on:
             - "nginx"
-            - "db"
+            - "postgres"
 
     nginx:
         build: nginx
@@ -29,8 +29,8 @@ services:
             - ./app/static:/var/www/static:ro
             - wsgi-socket-volume:/tmp/uwsgi
 
-    db:
-        image: "postgres:alpine"
+    postgres:
+        build: postgres
         ports:
             - "5432:5432"
         environment:

@@ -10,7 +10,6 @@ RUN apt-get install -yq        \
     python3                    \
     python3-pip                \
     uwsgi-plugin-python3       \
-    postgresql-client          \
     libpq-dev
 
 # this upgrades pip, installing it as `pip` instead of `pip3`

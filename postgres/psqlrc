@@ -1,0 +1,14 @@
+\set QUIET ON
+
+\set HISTFILE /var/lib/postgresql/data/psql_history
+\set HISTSIZE 1000000
+\set HISTCONTROL ignoredups
+
+\set COMP_KEYWORD_CASE upper
+
+\x auto
+
+\pset null 'NULL'
+\pset border 2
+
+\set QUIET OFF

@@ -32,8 +32,8 @@ bounce:
 
 
 psql: _db_start
-	docker-compose run --rm --no-deps -e PGPASSWORD=password base \
-	    psql -h db -U postgres $(DatabaseName)
+	docker-compose run --rm --no-deps -e PGPASSWORD=password postgres \
+	    psql -h postgres -U postgres $(DatabaseName)
 
 
 db_init: _db_reset _db_first_start
@@ -47,7 +47,7 @@ _db_reset:
 	docker-compose down -v
 
 _db_start:
-	docker-compose up -d db && sleep 2
+	docker-compose up -d postgres && sleep 2
 
 _db_first_start:
-	docker-compose up -d db && sleep 10
+	docker-compose up -d postgres && sleep 10
