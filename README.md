@@ -21,6 +21,8 @@ Start everything up: `$ make up`
 
 Tail the logs: `$ make logs`
 
+If uWSGI gets jammed: `$ make bounce`
+
 Stop everything: `$ make down`
 
 Take a look at the  Makefile for other commands.
