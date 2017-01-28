@@ -1,3 +1,5 @@
+from flask import g
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -6,13 +8,22 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-def init_db(database_uri):
-    engine = create_engine(database_uri, convert_unicode=True)
+def configure_db(app):
+    engine = create_engine(app.config['DATABASE_URI'], convert_unicode=True)
 
-    global db_session
-    db_session = scoped_session(sessionmaker(
+    session = scoped_session(sessionmaker(
         autocommit=False, autoflush=False, bind=engine
     ))
 
-    Base.query = db_session.query_property()
+    @app.before_request
+    def attach_session():
+        g.session = session()
+
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        session.remove()
+
+    Base.query = session.query_property()
     Base.metadata.create_all(bind=engine)
+
+    return session

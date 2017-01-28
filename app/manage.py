@@ -19,7 +19,7 @@ def recreate_db():
     """
     Recreates a local database. You probably should not use this on production.
     """
-    db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+    db_uri = app.config['DATABASE_URI']
 
     if database_exists(db_uri):
         drop_database(db_uri)
