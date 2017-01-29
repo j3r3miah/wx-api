@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, render_template, g
 
-from models import User
-from schemas import UserSchema
+from .models import User
+from .schemas import UserSchema
 
 main = Blueprint('main', __name__)
 

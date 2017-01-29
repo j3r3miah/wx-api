@@ -13,7 +13,7 @@ services:
             DATABASE_URI: "postgresql://postgres:password@postgres/flaskapp"
             APP_SETTINGS: "config.DevelopmentConfig"
         volumes:
-            - ./app:/var/www/app
+            - .:/flaskapp
             - wsgi-socket-volume:/tmp/uwsgi
         depends_on:
             - "nginx"
