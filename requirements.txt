@@ -1,5 +1,8 @@
 alembic==0.8.10
+apipkg==1.4
 click==6.7
+coverage==4.3.4
+execnet==1.4.1
 Flask==0.12
 Flask-Migrate==2.0.2
 Flask-Script==2.0.5
@@ -9,9 +12,15 @@ Jinja2==2.9.4
 Mako==1.0.6
 MarkupSafe==0.23
 marshmallow==2.12.1
+pep8==1.7.0
 psycopg2==2.6.2
 py==1.4.32
+pyflakes==1.5.0
 pytest==3.0.6
+pytest-cache==1.0
+pytest-cov==2.4.0
+pytest-flakes==1.0.1
+pytest-pep8==1.0.6
 python-editor==1.0.3
 six==1.10.0
 SQLAlchemy==1.1.5

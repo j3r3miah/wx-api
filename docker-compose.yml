@@ -24,6 +24,7 @@ services:
         environment:
             DATABASE_URI: 'sqlite://'
             APP_SETTINGS: "config.TestingConfig"
+            PYTEST_ADDOPTS: '--flakes --pep8'
 
     nginx:
         build: nginx
