@@ -8,6 +8,7 @@ build:
 	docker-compose build
 
 clean:
+	# NOTE: deletes persistent docker volume (postgres data files!)
 	docker-compose down -v
 	docker-compose rm -f
 
@@ -26,7 +27,6 @@ logs:
 	docker-compose logs -f base postgres
 
 bounce:
-	# sometimes coding errors will break uwsgi code reloading
 	docker-compose stop base
 	docker-compose up -d base
 
@@ -36,15 +36,12 @@ psql: _db_start
 	    psql -h postgres -U postgres $(DatabaseName)
 
 
-db_init: _db_reset _db_first_start
+db_init: _db_first_start
+	# NOTE: recreates a local database, deleting all data!
 	docker-compose run --rm --no-deps base python3 manage.py recreate_db
 	docker-compose run --rm --no-deps base python3 manage.py db init
 	docker-compose run --rm --no-deps base python3 manage.py db migrate
 	docker-compose run --rm --no-deps base python3 manage.py db upgrade
-
-_db_reset:
-	# delete persistent docker volume (postgres data files)
-	docker-compose down -v
 
 _db_start:
 	docker-compose up -d postgres && sleep 2
