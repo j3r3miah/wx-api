@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+
+# TODO: get these from env or docker-compose.yml
+DATABASE_NAME='flaskapp'
+POSTGRES_PASSWORD='password'
+
+# this rest of this script expects cwd to be the project dir
+SCRIPTDIR="$( cd "$( dirname "$0" )" && pwd )"
+cd $SCRIPTDIR
+
+RUN_NODEPS='docker-compose run --rm --no-deps'
+
+function usage {
+    # TODO: flesh this out
+    echo "usage: $0 <command> [command-args]"
+}
+
+if [ $# -eq 0 ];then
+    usage
+    exit 0
+fi
+
+cmd=$1
+shift
+
+if [ $cmd == "build" ]; then
+
+    # build everything
+    docker-compose build
+
+elif [ $cmd == "init_db" ]; then
+
+    read -e -p "existing postgres data will be deleted; ok? [y/N] " choice
+
+    if [[ "$choice" == [Yy]* ]]; then
+        # wait a bit in case this is the first run of postgres
+        docker-compose up -d postgres && sleep 10 || exit 2
+        
+        # drop and recreate database (deleting all data!)
+	$RUN_NODEPS base python3 manage.py recreate_db || exit 2
+
+        # initialize alembic migrations
+	$RUN_NODEPS base python3 manage.py db init || exit 2
+	$RUN_NODEPS base python3 manage.py db migrate || exit 2
+	$RUN_NODEPS base python3 manage.py db upgrade || exit 2
+    fi
+
+elif [ $cmd == "clean" ]; then
+
+    # kill all containers and, optionally, the postgres docker volume
+
+    read -e -p "delete persistent postgres docker volume? [y/N] " choice
+    if [[ "$choice" == [Yy]* ]]; then
+        # stop everything and kill persistent volumes
+        docker-compose down -v
+        docker-compose rm -f -v
+    else
+        docker-compose down
+        docker-compose rm -f
+    fi
+
+elif [ $cmd == "up" ]; then
+
+    # start the base container and dns services
+    docker-compose up -d base dnsmasq
+
+elif [ $cmd == "down" ]; then
+
+    # stop everything
+    docker-compose down
+
+elif [ $cmd == "bounce" ]; then
+
+    # restart the main service
+    docker-compose stop base
+    docker-compose up -d base
+
+elif [ $cmd == "logs" ]; then
+
+    if [[ "$@" == "" ]];then
+        containers="base postgres"
+    else
+        containers="$@"
+    fi
+    echo $containers
+
+    docker-compose logs -f $containers
+
+elif [ $cmd == "psql" ]; then
+
+    # start postgres container
+    docker-compose up -d postgres || exit 2
+
+    # start psql
+    $RUN_NODEPS -e PGPASSWORD=$POSTGRES_PASSWORD postgres \
+        psql -h postgres -U postgres $DATABASE_NAME "$@"
+
+elif [ $cmd == "bash" ]; then
+
+    # start a shell
+    $RUN_NODEPS base /bin/bash "$@"
+
+else
+    usage
+    exit 1
+fi
