@@ -7,7 +7,7 @@ volumes:
 
 services:
 
-    base:
+    base: &base_default
         build: .
         environment:
             DATABASE_URI: "postgresql://postgres:password@postgres/flaskapp"
@@ -18,6 +18,13 @@ services:
         depends_on:
             - "nginx"
             - "postgres"
+
+    test:
+        <<: *base_default
+        environment:
+            DATABASE_URI: 'sqlite://'
+            APP_SETTINGS: "config.TestingConfig"
+            PYTEST_ADDOPTS: '--flakes --pep8'
 
     nginx:
         build: nginx
