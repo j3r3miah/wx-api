@@ -1,15 +1,14 @@
 import datetime as dt
-from sqlalchemy import Column, Integer, String, DateTime
 
-from .database import Base
+from . import db
 
 
-class User(Base):
+class User(db.Model):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50))
-    created_at = Column(DateTime)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime)
 
     def __init__(self, name):
         self.name = name
