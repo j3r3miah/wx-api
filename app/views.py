@@ -1,8 +1,8 @@
-from flask import Blueprint, jsonify, render_template, g
+from flask import Blueprint, jsonify, render_template, request
 
-from .models import User
-from .schemas import UserSchema
-from . import db
+from app.models import User
+from app.schemas import UserSchema
+from app import db
 
 
 main = Blueprint('main', __name__)
@@ -16,9 +16,10 @@ def hello():
     return render_template('hello.html')
 
 
-@main.route('/<name>')
-def hello_name(name):
-    user = User(name=name)
+@main.route('/users/', methods=['POST'])
+def post_user():
+    name = request.form['name']
+    user = User(name)
     db.session.add(user)
     db.session.commit()
     return user_detail(user.id)

@@ -11,7 +11,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-def uwsgi_main():
+def create_app():
     from .views import main as main_blueprint
     app.register_blueprint(main_blueprint)
     return app
