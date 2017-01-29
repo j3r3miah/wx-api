@@ -3,6 +3,9 @@ MAINTAINER Jeremiah Boyle "jeremiah.boyle@gmail.com"
 
 ENV DEBIAN_FRONTEND noninteractive
 
+# pdbpp requires UTF-8 and it's generally saner than the posix default
+ENV LANG C.UTF-8
+
 RUN apt-get update
 RUN apt-get install -yq        \
     python3                    \
