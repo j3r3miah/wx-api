@@ -1,8 +1,8 @@
 import os
+import yaml
 
-from flask import json
 from flask_script import Manager
-from flask_migrate import Migrate, MigrateCommand
+from flask_migrate import Migrate, MigrateCommand, upgrade
 from sqlalchemy_utils import database_exists, create_database, drop_database
 
 from app import app, db
@@ -30,19 +30,20 @@ def recreate_db():
 
 @manager.command
 def load_fixtures(directory):
-    """ Load database fixtures from `directory/*.json`. """
+    """ Load database fixtures from `directory/*.yaml`. """
+    recreate_db()
+    upgrade()
 
-    json_files = os.listdir(directory)
-    json_files = [
-        os.path.join(directory, f) for f in json_files
-        if f.endswith('.json')
+    files = os.listdir(directory)
+    files = [
+        os.path.join(directory, f) for f in files if f.endswith('.yaml')
     ]
 
-    for file in json_files:
+    for file in files:
         print("Loading fixtures: {}".format(file))
 
         with open(file, 'rb') as fixture:
-            to_load = json.loads(fixture.read())
+            to_load = yaml.load(fixture.read())
 
         model = getattr(app_models, to_load['model'])
         objects = to_load['objects']
