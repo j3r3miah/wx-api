@@ -35,7 +35,7 @@ elif [ $cmd == "init_db" ]; then
     if [[ "$choice" == [Yy]* ]]; then
         # wait a bit in case this is the first run of postgres
         docker-compose up -d postgres && sleep 10 || exit 2
-        
+
         # drop and recreate database (deleting all data!)
 	$RUN_NODEPS base python3 manage.py recreate_db || exit 2
 

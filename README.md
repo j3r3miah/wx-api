@@ -13,16 +13,16 @@
 
 ### Instructions
 
-Firstly, get the postgres db volume set up: `$ make db_init`
+Firstly, get the postgres db volume set up: `$ ./develop init_db`
 
-Build the containers: `$ make build`
+Build the containers: `$ ./develop build`
 
-Start everything up: `$ make up`
+Start everything up: `$ ./develop up`
 
-Tail the logs: `$ make logs`
+Tail the logs: `$ ./develop logs`
 
-If uWSGI gets jammed: `$ make bounce`
+If uWSGI gets jammed: `$ ./develop bounce`
 
-Stop everything: `$ make down`
+Stop everything: `$ ./develop down`
 
-Take a look at the Makefile for other commands.
+Take a look at the `develop` for other commands.
