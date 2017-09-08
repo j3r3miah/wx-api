@@ -8,6 +8,7 @@ POSTGRES_PASSWORD='password'
 SCRIPTDIR="$( cd "$( dirname "$0" )" && pwd )"
 cd $SCRIPTDIR
 
+RUN='docker-compose run --rm'
 RUN_NODEPS='docker-compose run --rm --no-deps'
 
 function usage {
@@ -37,13 +38,17 @@ elif [ $cmd == "init_db" ]; then
         docker-compose up -d postgres && sleep 10 || exit 2
 
         # drop and recreate database (deleting all data!)
-	$RUN_NODEPS base python3 manage.py recreate_db || exit 2
+	$RUN base python3 manage.py recreate_db || exit 2
 
         # initialize alembic migrations
-	$RUN_NODEPS base python3 manage.py db init || exit 2
-	$RUN_NODEPS base python3 manage.py db migrate || exit 2
-	$RUN_NODEPS base python3 manage.py db upgrade || exit 2
+	$RUN base python3 manage.py db init || exit 2
+	$RUN base python3 manage.py db migrate || exit 2
+	$RUN base python3 manage.py db upgrade || exit 2
     fi
+
+elif [ $cmd == "manage" ]; then
+
+    $RUN base python3 manage.py "$@"
 
 elif [ $cmd == "clean" ]; then
 
@@ -85,6 +90,10 @@ elif [ $cmd == "logs" ]; then
     echo $containers
 
     docker-compose logs -f $containers
+
+elif [ $cmd == "pytest" ]; then
+
+    $RUN_NODEPS test py.test "$@"
 
 elif [ $cmd == "psql" ]; then
 
