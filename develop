@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # TODO: get these from env or docker-compose.yml
-DATABASE_NAME='flaskapp'
+DATABASE_NAME='wx-api'
 POSTGRES_PASSWORD='password'
 
 # this rest of this script expects cwd to be the project dir

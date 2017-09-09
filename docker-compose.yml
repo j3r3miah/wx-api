@@ -10,10 +10,13 @@ services:
     base: &base_default
         build: .
         environment:
-            DATABASE_URI: "postgresql://postgres:password@postgres/flaskapp"
+            DATABASE_URI: "postgresql://postgres:password@postgres/wx-api"
             APP_SETTINGS: "config.DevelopmentConfig"
+            CHROME_DRIVER_PATH: "/opt/selenium/chromedriver-2.31"
+        ports:
+          - "5900:5900"
         volumes:
-            - .:/flaskapp
+            - .:/wx-api
             - wsgi-socket-volume:/tmp/uwsgi
         depends_on:
             - "nginx"
@@ -29,11 +32,11 @@ services:
     nginx:
         build: nginx
         environment:
-            - VIRTUAL_HOST=flaskapp.test
+            - VIRTUAL_HOST=wx-api.test
         ports:
             - "7780:80"
         volumes:
-            - ./static:/flaskapp/static:ro
+            - ./static:/wx-api/static:ro
             - wsgi-socket-volume:/tmp/uwsgi
 
     postgres:

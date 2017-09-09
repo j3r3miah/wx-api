@@ -7,6 +7,7 @@ class Config(object):
     TESTING = False
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URI']
+    CHROME_DRIVER_PATH = os.environ['CHROME_DRIVER_PATH']
 
 
 class ProductionConfig(Config):
@@ -25,4 +26,3 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URI']

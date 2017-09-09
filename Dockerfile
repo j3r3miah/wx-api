@@ -1,5 +1,7 @@
-FROM ubuntu:latest
+FROM selenium/node-chrome-debug:3.5.3
 MAINTAINER Jeremiah Boyle "jeremiah.boyle@gmail.com"
+
+USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -21,6 +23,14 @@ RUN pip install -r /tmp/requirements.txt
 
 COPY uwsgi/uwsgi.ini /etc/uwsgi.ini
 
-WORKDIR /flaskapp
+# generate vnc password as root so it can be run as root
+RUN mkdir -p ~/.vnc && x11vnc -storepasswd secret ~/.vnc/passwd
 
-CMD ["/usr/local/bin/uwsgi", "--ini", "/etc/uwsgi.ini"]
+# script to run selenium stuff (xvfb, fluxbox, vnc). was modified to also run:
+#   /usr/local/bin/uwsgi --ini /etc/uwsgi.ini
+COPY entry_point.sh /opt/bin/entry_point.sh
+RUN chmod +x /opt/bin/entry_point.sh
+
+WORKDIR /wx-api
+
+ENTRYPOINT /opt/bin/entry_point.sh
