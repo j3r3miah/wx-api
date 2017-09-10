@@ -1,7 +1,5 @@
-FROM selenium/node-chrome-debug:3.5.3
+FROM ubuntu:latest
 MAINTAINER Jeremiah Boyle "jeremiah.boyle@gmail.com"
-
-USER root
 
 ENV DEBIAN_FRONTEND noninteractive
 
