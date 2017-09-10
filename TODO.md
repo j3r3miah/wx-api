@@ -45,6 +45,10 @@ Where should I run this?
 
 - How do I talk to the db from the service?
 
+- We actually do want some concurrency. We want to be able to get a status
+  update from the service while longer running tasks are in progress. We just
+  need synchronization around the webdriver. How do we do that?
+
 - How best to present the worker API? Instead of random methods, a class?
   - Commands typically produce session state (login) or write web results to db
   - Async notification of updates not needed until later (polling => webhooks)

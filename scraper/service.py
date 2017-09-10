@@ -2,6 +2,7 @@ import os
 import json
 import atexit
 import logging
+import datetime as dt
 
 from celery import Celery
 from flask_sqlalchemy import SQLAlchemy
@@ -52,9 +53,23 @@ def login():
     success = _scraper.login(creds['username'], creds['password'])
     return success
 
+_last_update = {}
+
 @worker.task
 def spot(spot_id):
-    return refresh_spot.delay(spot_id)
+    last_update = _last_update.get(spot_id)
+    if (
+        last_update and
+        last_update + dt.timedelta(minutes=1) > dt.datetime.utcnow()
+    ):
+        _last_update[spot_id] = dt.datetime.utcnow()
+        print('queuing a refresh')
+        refresh_spot.delay(spot_id)
+        return {'status': 'refreshing'}
+
+    # return status (first_load, refreshing, up_to_date, etc)
+    print('spot is already up to date')
+    return {'status': 'up_to_date'}
 
 @worker.task
 def refresh_spot(spot_id):
