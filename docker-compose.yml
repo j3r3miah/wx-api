@@ -7,11 +7,9 @@ volumes:
 
 services:
 
-    base: &base_default
-        build: .
+    base:
+        build: scraper
         environment:
-            DATABASE_URI: "postgresql://postgres:password@postgres/wx-api"
-            APP_SETTINGS: "config.DevelopmentConfig"
             CHROME_DRIVER_PATH: "/opt/selenium/chromedriver-2.31"
             SCRAPER_DATA_DIR: "data"
             WEBSITE_CREDENTIALS: "data/credentials.json"
@@ -20,20 +18,22 @@ services:
           - "5900:5900"
         volumes:
             - .:/wx-api
+        depends_on:
+            - "postgres"
+            - "amqp"
+
+    api:
+        build: app
+        environment:
+            DATABASE_URI: "postgresql://postgres:password@postgres/wx-api"
+            APP_SETTINGS: "config.DevelopmentConfig"
+        volumes:
+            - .:/wx-api
             - wsgi-socket-volume:/tmp/uwsgi
         depends_on:
             - "nginx"
             - "postgres"
-        # enable stdin for debugging python with pdb (TODO: not working)
-        # stdin_open: true
-        # tty: true
-
-    test:
-        <<: *base_default
-        environment:
-            DATABASE_URI: 'sqlite://'
-            APP_SETTINGS: "config.TestingConfig"
-            PYTEST_ADDOPTS: '--flakes --pep8'
+            - "amqp"
 
     nginx:
         build: nginx
@@ -71,3 +71,13 @@ services:
             - "80:80"
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock:ro
+
+    amqp:
+        image: rabbitmq:3.5-management
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        hostname: amqp
+        environment:
+            VIRTUAL_HOST: "amqp.test"
+            VIRTUAL_PORT: 15672
