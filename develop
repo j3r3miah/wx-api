@@ -116,6 +116,14 @@ elif [ $cmd == "bash" ]; then
     # start a shell
     $RUN_NODEPS base /bin/bash "$@"
 
+elif [ $cmd == "vnc" ]; then
+
+    open vnc://dontcare:secret@localhost:5900
+
+elif [ $cmd == "rabbit" ]; then
+
+    open http://amqp.test:15672
+
 else
     usage
     exit 1

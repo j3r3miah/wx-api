@@ -25,8 +25,6 @@ app = Celery(
     broker='amqp://guest:guest@amqp:5672//'
 )
 
-# atexit.register(_scraper_quit)
-
 def _scraper_init():
     global _scraper
     if not _scraper:
@@ -43,6 +41,8 @@ def _scraper_destroy():
         log.info('destroying scraper')
         _scraper.shutdown()
         _scraper = None
+
+# atexit.register(_scraper_quit)
 
 @app.task
 def reset():
