@@ -1,6 +1,13 @@
 
 ## DevOps ##
 
+- I am in dependency hell between these two applications. Right now they share
+  a session and the service depends on Flask and the Flask app autoreloads when
+  the service code changes :( What's the simplest solution?
+  - Join everything into one app
+  - Separate completely with shared packages for models
+    - Can't use Flask-SQLAlchemy then... but perhaps that's better
+
 - Clean up file tree organization, module naming, etc
   - `app`/`service` or `api`/`scraper`?
 - Clean up requirements for service vs api images

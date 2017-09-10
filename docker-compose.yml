@@ -10,6 +10,8 @@ services:
     base:
         build: scraper
         environment:
+            APP_SETTINGS: "config.DevelopmentConfig"
+            DATABASE_URI: "postgresql://postgres:password@postgres/wx-api"
             CHROME_DRIVER_PATH: "/opt/selenium/chromedriver-2.31"
             SCRAPER_DATA_DIR: "data"
             WEBSITE_CREDENTIALS: "data/credentials.json"
@@ -25,8 +27,8 @@ services:
     api:
         build: app
         environment:
-            DATABASE_URI: "postgresql://postgres:password@postgres/wx-api"
             APP_SETTINGS: "config.DevelopmentConfig"
+            DATABASE_URI: "postgresql://postgres:password@postgres/wx-api"
         volumes:
             - .:/wx-api
             - wsgi-socket-volume:/tmp/uwsgi

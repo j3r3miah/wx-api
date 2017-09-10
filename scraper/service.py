@@ -4,22 +4,18 @@ import atexit
 import logging
 
 from celery import Celery
+from flask_sqlalchemy import SQLAlchemy
 
 from scraper.scraper import Scraper
 
-# logging.basicConfig(
-#     level=logging.INFO,
-#     datefmt='%Y-%m-%d %H:%M:%S',
-#     format='%(asctime)s - [%(levelname)s] %(message)s'
-# )
+from app import db
+from app.models import Spot
 
 log = logging.getLogger(__name__)
 
-# db = SQLAlchemy(app)
-
 _scraper = None
 
-app = Celery(
+worker = Celery(
     __name__,
     backend='rpc://',
     broker='amqp://guest:guest@amqp:5672//'
@@ -44,19 +40,33 @@ def _scraper_destroy():
 
 # atexit.register(_scraper_quit)
 
-@app.task
+@worker.task
 def reset():
     _scraper_destroy()
     _scraper_init()
 
-@app.task
+@worker.task
 def login():
     reset()
     creds = json.load(open(os.environ['WEBSITE_CREDENTIALS']))
     success = _scraper.login(creds['username'], creds['password'])
     return success
 
-@app.task
+@worker.task
 def spot(spot_id):
+    return refresh_spot.delay(spot_id)
+
+@worker.task
+def refresh_spot(spot_id):
     data = _scraper.get_spot_data(spot_id)
+    spot = db.session.query(Spot).get(spot_id)
+    if not spot:
+        spot = Spot()
+        spot.id = spot_id
+        db.session.add(spot)
+    spot.update(**data)
+    print(spot)
+    print(spot.__dict__)
+    db.session.commit()
+    print(db.session.query(Spot).all())
     return data

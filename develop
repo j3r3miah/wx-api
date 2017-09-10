@@ -85,8 +85,8 @@ elif [ $cmd == "down" ]; then
 
 elif [ $cmd == "bounce" ]; then
 
-    # restart the main service
-    docker-compose stop api base
+  # restart the api service (when auto-reloader gets jammed)
+    docker-compose stop api
     docker-compose up -d api
 
 elif [ $cmd == "logs" ]; then
