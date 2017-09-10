@@ -1,38 +1,35 @@
+import json
+import logging
+
 from flask import Blueprint, jsonify, render_template, request
 
 from app.models import User
 from app.schemas import UserSchema
-from app import db
-
+from app import app, db, scraper, recreate_scraper
 
 main = Blueprint('main', __name__)
 
-user_schema = UserSchema()
-users_schema = UserSchema(many=True)
+log = logging.getLogger(__name__)
 
 
 @main.route('/')
 def hello():
+    log.info('helo')
     return render_template('hello.html')
 
+@main.route('/reset/')
+def reset():
+    recreate_scraper()
+    return jsonify(True)
 
-@main.route('/users/', methods=['POST'])
-def post_user():
-    name = request.form['name']
-    user = User(name)
-    db.session.add(user)
-    db.session.commit()
-    return user_detail(user.id)
+@main.route('/login/')
+def login():
+    creds = json.load(open(app.config['WEBSITE_CREDENTIALS']))
+    success = scraper().login(creds['username'], creds['password'])
+    return jsonify(success)
 
-
-@main.route('/users/')
-def users():
-    all_users = db.session.query(User).all()
-    result = users_schema.dump(all_users)
-    return jsonify(result.data)
-
-
-@main.route('/users/<id>')
-def user_detail(id):
-    user = db.session.query(User).get(id)
-    return jsonify(user_schema.dump(user).data)
+@main.route('/spot/')
+def spot():
+    # TODO test code
+    data = scraper().get_spot_data(1786)
+    return jsonify(data)

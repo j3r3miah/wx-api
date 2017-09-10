@@ -64,6 +64,13 @@ elif [ $cmd == "clean" ]; then
         docker-compose rm -f
     fi
 
+elif [ $cmd == "run" ]; then
+
+    docker-compose up -d dnsmasq
+
+    # start the base container in foreground, for debugging/etc
+    docker-compose up base
+
 elif [ $cmd == "up" ]; then
 
     # start the base container and dns services

@@ -13,6 +13,9 @@ services:
             DATABASE_URI: "postgresql://postgres:password@postgres/wx-api"
             APP_SETTINGS: "config.DevelopmentConfig"
             CHROME_DRIVER_PATH: "/opt/selenium/chromedriver-2.31"
+            SCRAPER_DATA_DIR: "data"
+            WEBSITE_CREDENTIALS: "data/credentials.json"
+            WEBSITE_URLS: "data/urls.json"
         ports:
           - "5900:5900"
         volumes:
@@ -21,6 +24,9 @@ services:
         depends_on:
             - "nginx"
             - "postgres"
+        # enable stdin for debugging python with pdb (TODO: not working)
+        # stdin_open: true
+        # tty: true
 
     test:
         <<: *base_default
