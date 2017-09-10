@@ -25,3 +25,4 @@ include *.m
 include *.yml
 include *.yaml
 exclude *.swp
+include *.md

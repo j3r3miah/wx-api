@@ -38,17 +38,17 @@ elif [ $cmd == "init_db" ]; then
         docker-compose up -d postgres && sleep 10 || exit 2
 
         # drop and recreate database (deleting all data!)
-	$RUN base python3 manage.py recreate_db || exit 2
+	$RUN api python3 manage.py recreate_db || exit 2
 
         # initialize alembic migrations
-	$RUN base python3 manage.py db init || exit 2
-	$RUN base python3 manage.py db migrate || exit 2
-	$RUN base python3 manage.py db upgrade || exit 2
+	$RUN api python3 manage.py db init || exit 2
+	$RUN api python3 manage.py db migrate || exit 2
+	$RUN api python3 manage.py db upgrade || exit 2
     fi
 
 elif [ $cmd == "manage" ]; then
 
-    $RUN base python3 manage.py "$@"
+    $RUN api python3 manage.py "$@"
 
 elif [ $cmd == "clean" ]; then
 
@@ -64,17 +64,19 @@ elif [ $cmd == "clean" ]; then
         docker-compose rm -f
     fi
 
-elif [ $cmd == "run" ]; then
+elif [ $cmd == "api" ]; then
 
-    docker-compose up -d dnsmasq
+    # start the api container in foreground, for debugging/etc
+    docker-compose up api
+
+elif [ $cmd == "base" ]; then
 
     # start the base container in foreground, for debugging/etc
     docker-compose up base
 
 elif [ $cmd == "up" ]; then
 
-    # start the base container and dns services
-    docker-compose up -d base dnsmasq
+    docker-compose up -d api
 
 elif [ $cmd == "down" ]; then
 
@@ -84,13 +86,13 @@ elif [ $cmd == "down" ]; then
 elif [ $cmd == "bounce" ]; then
 
     # restart the main service
-    docker-compose stop base
-    docker-compose up -d base
+    docker-compose stop api base
+    docker-compose up -d api
 
 elif [ $cmd == "logs" ]; then
 
     if [[ "$@" == "" ]];then
-        containers="base postgres"
+        containers="api base postgres"
     else
         containers="$@"
     fi

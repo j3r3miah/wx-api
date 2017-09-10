@@ -38,4 +38,8 @@ fluxbox -display $DISPLAY &
 
 x11vnc -forever -usepw -shared -rfbport 5900 -display $DISPLAY &
 
-celery -A scraper.service worker --loglevel=info
+celery worker --app=scraper.service \
+  # there is no synchronization around the webdriver so this worker is meant to
+  # run tasks sequentially, one at a time. limit concurrency. disable scaling.
+  --concurrency=1 --autoscale=1,1 \
+  --loglevel=info
