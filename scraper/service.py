@@ -57,19 +57,32 @@ _last_update = {}
 
 @worker.task
 def spot(spot_id):
+    global _scraper
+    if not _scraper:
+        login_and_refresh_spot.delay(spot_id)
+        return {'status': 'refreshing'}
+
     last_update = _last_update.get(spot_id)
     if (
         last_update and
         last_update + dt.timedelta(minutes=1) > dt.datetime.utcnow()
     ):
-        _last_update[spot_id] = dt.datetime.utcnow()
-        print('queuing a refresh')
-        refresh_spot.delay(spot_id)
-        return {'status': 'refreshing'}
+        print('spot is already up to date, next update: {}'.format(
+            last_update + dt.timedelta(minutes=1) - dt.datetime.utcnow()
+        ))
+        return {'status': 'up_to_date'}
 
-    # return status (first_load, refreshing, up_to_date, etc)
-    print('spot is already up to date')
-    return {'status': 'up_to_date'}
+    _last_update[spot_id] = dt.datetime.utcnow()
+    print('queuing a refresh')
+    refresh_spot.delay(spot_id)
+
+    # TODO return status (first_load, refreshing, up_to_date, etc)
+    return {'status': 'refreshing'}
+
+@worker.task
+def login_and_refresh_spot(spot_id):
+    login()
+    refresh_spot(spot_id)
 
 @worker.task
 def refresh_spot(spot_id):

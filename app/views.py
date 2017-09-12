@@ -31,12 +31,12 @@ def login():
 @main.route('/spot/')
 def refresh_spot():
     spot_id = 1786
-    status = spot_task.delay(spot_id)
+    result = spot_task.delay(spot_id).wait()
     spot = db.session.query(Spot).get(spot_id)
     if spot:
         # TODO SpotSchema
         dump = {k:v for (k,v) in spot.__dict__.items() if k[0] != '_'}
-        dump['status'] = status.result
+        dump['status'] = result['status']
         return jsonify(dump)
     else:
-        return jsonify({'status': status})
+        return jsonify({'status': result['status']})
