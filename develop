@@ -72,6 +72,7 @@ elif [ $cmd == "api" ]; then
 elif [ $cmd == "base" ]; then
 
     # start the base container in foreground, for debugging/etc
+    docker-compose kill base
     docker-compose up base
 
 elif [ $cmd == "up" ]; then

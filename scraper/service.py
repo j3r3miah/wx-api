@@ -2,9 +2,11 @@ import os
 import json
 import atexit
 import logging
-import datetime as dt
+from datetime import timedelta
 
 from celery import Celery
+from celery.task import periodic_task
+
 from flask_sqlalchemy import SQLAlchemy
 
 from scraper.scraper import Scraper
@@ -44,57 +46,47 @@ def _scraper_destroy():
 @worker.task
 def reset():
     _scraper_destroy()
-    _scraper_init()
 
 @worker.task
 def login():
-    reset()
+    _scraper_destroy()
+    _scraper_init()
     creds = json.load(open(os.environ['WEBSITE_CREDENTIALS']))
     success = _scraper.login(creds['username'], creds['password'])
     return success
 
-_last_update = {}
-
-@worker.task
-def spot(spot_id):
+def ensure_login():
     global _scraper
     if not _scraper:
-        login_and_refresh_spot.delay(spot_id)
-        return {'status': 'refreshing'}
-
-    last_update = _last_update.get(spot_id)
-    if (
-        last_update and
-        last_update + dt.timedelta(minutes=1) > dt.datetime.utcnow()
-    ):
-        print('spot is already up to date, next update: {}'.format(
-            last_update + dt.timedelta(minutes=1) - dt.datetime.utcnow()
-        ))
-        return {'status': 'up_to_date'}
-
-    _last_update[spot_id] = dt.datetime.utcnow()
-    print('queuing a refresh')
-    refresh_spot.delay(spot_id)
-
-    # TODO return status (first_load, refreshing, up_to_date, etc)
-    return {'status': 'refreshing'}
+        login()
 
 @worker.task
-def login_and_refresh_spot(spot_id):
-    login()
-    refresh_spot(spot_id)
-
-@worker.task
-def refresh_spot(spot_id):
-    data = _scraper.get_spot_data(spot_id)
+def touch_spot(spot_id):
     spot = db.session.query(Spot).get(spot_id)
-    if not spot:
+    if spot:
+        spot.touch()
+    else:
         spot = Spot()
         spot.id = spot_id
         db.session.add(spot)
-    spot.update(**data)
-    print(spot)
-    print(spot.__dict__)
     db.session.commit()
-    print(db.session.query(Spot).all())
+
+@worker.task
+def refresh_spot(spot_id):
+    _refresh_spot(db.session.query(Spot).get(spot_id))
+
+# @worker.task
+@periodic_task(run_every=timedelta(seconds=30))
+def auto_refresh_loop():
+    log.info('[autorefresh] Scanning for spots to refresh')
+    for spot in db.session.query(Spot).all():
+        if spot.should_refresh() and spot.needs_refresh():
+            log.info('[autorefresh] Refreshing spot: %s' % spot.id)
+            _refresh_spot(spot)
+
+def _refresh_spot(spot):
+    ensure_login()
+    data = _scraper.get_spot_data(spot.id)
+    spot.update(**data)
+    db.session.commit()
     return data

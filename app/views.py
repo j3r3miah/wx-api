@@ -7,7 +7,7 @@ from app.models import Spot
 # from app.schemas import UserSchema
 from app import app, db
 
-from scraper.service import login as login_task, spot as spot_task
+from scraper.service import touch_spot as touch_spot_task
 
 main = Blueprint('main', __name__)
 
@@ -19,24 +19,15 @@ def hello():
     log.info('helo')
     return render_template('hello.html')
 
-@main.route('/reset/')
-def reset():
-    return jsonify(True)
-
-@main.route('/login/')
-def login():
-    login_task.delay()
-    return jsonify(True)
-
 @main.route('/spot/')
-def refresh_spot():
+def get_spot():
     spot_id = 1786
-    result = spot_task.delay(spot_id).wait()
+    touch_spot_task.delay(spot_id)
     spot = db.session.query(Spot).get(spot_id)
     if spot:
         # TODO SpotSchema
         dump = {k:v for (k,v) in spot.__dict__.items() if k[0] != '_'}
-        dump['status'] = result['status']
+        dump['status'] = 'whatever'
         return jsonify(dump)
     else:
-        return jsonify({'status': result['status']})
+        return jsonify({'status': 'ask_again_later'})

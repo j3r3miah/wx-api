@@ -38,6 +38,6 @@ fluxbox -display $DISPLAY &
 
 x11vnc -forever -usepw -shared -rfbport 5900 -display $DISPLAY &
 
-celery worker --app=scraper.service \
-  --concurrency=1 --autoscale=1,1 \
-  --loglevel=INFO
+# start scraper service worker
+celery worker --app=scraper.service --loglevel=INFO \
+  --concurrency=1 --autoscale=1,1 --beat
