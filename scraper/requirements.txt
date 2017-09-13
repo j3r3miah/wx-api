@@ -1,7 +1,7 @@
 alembic==0.8.10
 apipkg==1.4
-click==6.7
 celery==4.1.0
+click==6.7
 coverage==4.3.4
 execnet==1.4.1
 fancycompleter==0.7

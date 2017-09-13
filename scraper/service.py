@@ -14,13 +14,13 @@ from app.models import Spot
 
 log = logging.getLogger(__name__)
 
-_scraper = None
-
 worker = Celery(
     __name__,
     backend='rpc://',
     broker='amqp://guest:guest@amqp:5672//'
 )
+
+_scraper = None
 
 def _scraper_init():
     global _scraper
